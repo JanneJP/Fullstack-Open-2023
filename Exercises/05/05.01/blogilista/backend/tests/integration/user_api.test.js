@@ -24,6 +24,22 @@ describe('when there is initially one user at db', () => {
       .expect('Content-Type', /application\/json/)
   })
 
+  test('All users are returned', async () => {
+    const response = await api.get('/api/users')
+
+    expect(response.body).toHaveLength(1)
+  })
+
+  test('Get spesific user', async () => {
+    const response = await api.get('/api/users')
+    const userId = response.body[0].id.toString()
+
+    await api
+      .get(`/api/users/${userId}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
   describe('Adding new users', () => {
     test('creation succeeds with a fresh username', async () => {
       const usersAtStart = await helper.usersInDb()
