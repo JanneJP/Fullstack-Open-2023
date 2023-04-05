@@ -8,7 +8,9 @@ import loginService from './services/login'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('') 
+  const [notificationMessage, setNotificationMessage] = useState(null)
+
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
@@ -42,24 +44,35 @@ const App = () => {
 
   }, [user])
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     loginService.logout()
     setUser(null)
+    setNotificationMessage('Logged out')
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
   }
 
   const addBlog = async (event) => {
     event.preventDefault()
 
     try {
-      blogService.create({ title, author, url })
+      await blogService.create({ title, author, url })
 
       const b = await userService.getUser(user.id)
 
       setBlogs(b.blogs)
-
+      setNotificationMessage('New blog added')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     } catch (exception) {
-      console.log(exception)
-      setErrorMessage(exception.message)
+      let message = exception.message
+      if (exception.response) {
+        message = exception.response.data.error
+      }
+      console.log(message)
+      setErrorMessage(message)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -84,6 +97,10 @@ const App = () => {
       console.log('Saving into local storage', u)
       setUsername('')
       setPassword('')
+      setNotificationMessage('Logged in')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     } catch (exception) {
       console.log(exception)
       setErrorMessage('wrong credentials')
@@ -98,7 +115,7 @@ const App = () => {
       <h2>Log in to application</h2>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -107,7 +124,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -115,7 +132,7 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
   const blogForm = () => (
@@ -143,23 +160,24 @@ const App = () => {
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>
-      
+
       <button type="submit">save</button>
-    </form>  
+    </form>
   )
 
   return (
     <div>
       <Notification message={errorMessage} />
+      <Notification message={notificationMessage} />
       {!user && loginForm()}
       {user && <div>
-          <h2>blogs</h2>
-          <p>{user.name} logged in <button type="button" onClick={handleLogout}>Logout</button></p>
-          {blogForm()}
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-          )}
-        </div>
+        <h2>blogs</h2>
+        <p>{user.name} logged in <button type="button" onClick={handleLogout}>Logout</button></p>
+        {blogForm()}
+        {blogs.map(blog =>
+          <Blog key={blog.id} blog={blog} />
+        )}
+      </div>
       }
     </div>
   )
