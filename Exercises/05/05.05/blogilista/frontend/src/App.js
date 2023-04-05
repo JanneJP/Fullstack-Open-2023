@@ -6,6 +6,9 @@ import blogService from './services/blogs'
 import userService from './services/users'
 import loginService from './services/login'
 
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
+
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
@@ -62,6 +65,11 @@ const App = () => {
       const b = await userService.getUser(user.id)
 
       setBlogs(b.blogs)
+
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+
       setNotificationMessage('New blog added')
       setTimeout(() => {
         setNotificationMessage(null)
@@ -135,35 +143,22 @@ const App = () => {
     </form>
   )
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        Title
-        <input
-          type="text"
-          value={title}
-          name="Title"
-          onChange={({ target }) => setTitle(target.value)}
-        />
-        Author
-        <input
-          type="text"
-          value={author}
-          name="Author"
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-        Url
-        <input
-          type="text"
-          value={url}
-          name="Url"
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
+  const blogForm = () => {
 
-      <button type="submit">save</button>
-    </form>
-  )
+    return (
+      <Togglable buttonLabel='New Blog'>
+        <BlogForm
+          title={title}
+          author={author}
+          url={url}
+          handleTitleChange={({ target }) => setTitle(target.value)}
+          handleAuthorChange={({ target }) => setAuthor(target.value)}
+          handleUrlChange={({ target }) => setUrl(target.value)}
+          handleSubmit={addBlog}
+        />
+      </Togglable>
+    )
+  }
 
   return (
     <div>
