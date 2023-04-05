@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -10,24 +10,44 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
-  const [login, setLogin] = useState(null)
   const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const userJSON = window.localStorage.getItem('user')
+
+    if (userJSON && userJSON !== 'null') {
+      const u = JSON.parse(userJSON)
+      setUser(u)
+      console.log('Found in local storage', u)
+      blogService.setToken(u.token)
+    }
+  }, [])
+
+  const handleLogout = (event) => {
+    loginService.logout()
+    setUser(null)
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
+
     try {
       const l = await loginService.login({ username, password })
-      console.log(l)
+
       blogService.setToken(l.token)
 
-      setLogin(l)
+      let u = await userService.getUser(l.id)
 
-      const u = await userService.getUser(l.id)
-      console.log(u)
+      u.token = l.token
+
       setUser(u)
+
+      window.localStorage.setItem('user', JSON.stringify(u))
+      console.log('Saving into local storage', u)
       setUsername('')
       setPassword('')
     } catch (exception) {
+      console.log(exception)
       setErrorMessage('wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
@@ -66,7 +86,7 @@ const App = () => {
       {!user && loginForm()}
       {user && <div>
           <h2>blogs</h2>
-          <p>{user.name} logged in</p>
+          <p>{user.name} logged in <button type="button" onClick={handleLogout}>Logout</button></p>
           {user.blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}

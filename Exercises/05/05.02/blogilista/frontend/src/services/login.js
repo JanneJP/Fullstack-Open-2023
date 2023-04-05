@@ -8,5 +8,10 @@ const login = async credentials => {
   return response.data
 }
 
+const logout = () => {
+  window.localStorage.removeItem('login')
+  window.localStorage.removeItem('user')
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { login }
+export default { login, logout }
