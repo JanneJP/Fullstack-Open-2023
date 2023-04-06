@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+
 const Blog = require('../src/models/blog')
 const User = require('../src/models/user')
 
@@ -46,11 +48,22 @@ const nonExistingId = async () => {
   return blog._id.toString()
 }
 
+const createUser = async (userObject) => {
+  const user = new User({
+    username: userObject.username,
+    name: userObject.name,
+    passwordHash: await bcrypt.hash(userObject.password, 10)
+  })
+
+  await user.save()
+}
+
 module.exports = {
   initialBlogs,
   initialUser,
   firstUser,
   nonExistingId,
   blogsInDb,
-  usersInDb
+  usersInDb,
+  createUser
 }

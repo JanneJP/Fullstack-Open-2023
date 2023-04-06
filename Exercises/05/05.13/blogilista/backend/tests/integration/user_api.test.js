@@ -1,20 +1,19 @@
-const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 
 const helper = require('../test_helper')
 const User = require('../../src/models/user')
 const app = require('../../src/app')
 
+
 const api = supertest(app)
+
+
 
 describe('when there is initially one user at db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
+    await helper.createUser(helper.initialUser)
   })
 
   test('Users are returned as json', async () => {
@@ -40,13 +39,13 @@ describe('when there is initially one user at db', () => {
       .expect('Content-Type', /application\/json/)
   })
 
-  describe('Adding new users', () => {
+  describe('Creating new users', () => {
     test('creation succeeds with a fresh username', async () => {
       const usersAtStart = await helper.usersInDb()
 
       const newUser = {
-        username: 'aaa_bbb',
-        name: 'AAA BBB',
+        username: 'test_user',
+        name: 'Test User',
         password: 'password',
       }
 
@@ -89,7 +88,7 @@ describe('when there is initially one user at db', () => {
 
       const newUser = {
         username: 'a',
-        name: 'Superuser',
+        name: 'Test User 2',
         password: 'password',
       }
 
@@ -109,9 +108,9 @@ describe('when there is initially one user at db', () => {
       const usersAtStart = await helper.usersInDb()
 
       const newUser = {
-        username: 'ttttttttttt',
-        name: 'Superuser',
-        password: 'p',
+        username: 'test_user_3',
+        name: 'Test User 3',
+        password: 'a',
       }
 
       const result = await api
@@ -130,8 +129,8 @@ describe('when there is initially one user at db', () => {
       const usersAtStart = await helper.usersInDb()
 
       const newUser = {
-        username: 'ttttttttttt',
-        name: 'Superuser'
+        username: 'test_user_4',
+        name: 'Test User 4'
       }
 
       const result = await api
@@ -141,6 +140,26 @@ describe('when there is initially one user at db', () => {
         .expect('Content-Type', /application\/json/)
 
       expect(result.body.error).toContain('Password required')
+
+      const usersAtEnd = await helper.usersInDb()
+      expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    })
+
+    test('creation fails with proper statuscode and message if username is missing', async () => {
+      const usersAtStart = await helper.usersInDb()
+
+      const newUser = {
+        name: 'Test User 5',
+        password: 'password'
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      expect(result.body.error).toContain('User validation failed: username: Path `username` is required.')
 
       const usersAtEnd = await helper.usersInDb()
       expect(usersAtEnd).toHaveLength(usersAtStart.length)
