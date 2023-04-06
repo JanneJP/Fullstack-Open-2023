@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
-import userService from './services/users'
 import loginService from './services/login'
+import userService from './services/users'
 
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
@@ -30,14 +30,14 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const getUserBlogs = async () => {
-      const b = await userService.getUser(user.id)
+    const refreshBlogs = async () => {
+      const b = await blogService.getAll()
 
-      setBlogs(b.blogs)
+      setBlogs(b)
     }
     if (user) {
 
-      getUserBlogs()
+      refreshBlogs()
     }
 
   }, [user])
@@ -69,10 +69,6 @@ const App = () => {
 
       setUser(u)
 
-      const b = await userService.getUser(u.id)
-
-      setBlogs(b.blogs)
-
       window.localStorage.setItem('user', JSON.stringify(u))
       console.log('Saving into local storage', u)
 
@@ -82,10 +78,17 @@ const App = () => {
     }
   }
 
+  const blogFormRef = useRef()
+
   const addBlog = async (blogObject) => {
     try {
-      const returnedBlog = await blogService.create(blogObject)
+      blogFormRef.current.toggleVisibility()
+      let returnedBlog = await blogService.create(blogObject)
 
+      const u = await userService.getUser(returnedBlog.user)
+
+      returnedBlog.user = u
+      console.log(returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
 
       flashNotification('New blog added')
@@ -102,7 +105,7 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <Togglable buttonLabel='New Blog'>
+      <Togglable buttonLabel='New Blog' ref={blogFormRef}>
         <BlogForm createBlog={addBlog}/>
       </Togglable>
     )

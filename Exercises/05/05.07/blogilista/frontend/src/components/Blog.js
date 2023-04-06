@@ -19,7 +19,7 @@ const Blog = (props) => {
     marginBottom: 5
   }
 
-  console.log(props.blog)
+  //console.log(props.blog)
 
   return (
     <div style={blogStyle}>
@@ -30,6 +30,7 @@ const Blog = (props) => {
         <p>{props.blog.title} by {props.blog.author} <button onClick={toggleVisibility}>Hide</button></p>
         <p>{props.blog.url}</p>
         <p>Likes {props.blog.likes}</p>
+        <p>{props.blog.user.username}</p>
       </div>
     </div>
   )
