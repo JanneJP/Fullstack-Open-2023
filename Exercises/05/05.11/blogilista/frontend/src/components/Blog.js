@@ -37,7 +37,9 @@ const Blog = (props) => {
         <p>{props.blog.url}</p>
         <p>Likes {props.blog.likes} <button onClick={likeBlog}>Like</button></p>
         <p>{props.blog.user.username}</p>
-        <button onClick={removeBlog}>Remove</button>
+        {props.user.id === props.blog.user.id &&
+          <button onClick={removeBlog}>Remove</button>
+        }
       </div>
     </div>
   )

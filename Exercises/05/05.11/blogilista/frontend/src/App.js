@@ -144,7 +144,7 @@ const App = () => {
 
     return (
       <div>
-        {b.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show' likeBlog={handleLike} removeBlog={handleRemove} />)}
+        {b.map(blog => <Blog key={blog.id} blog={blog} user={user} buttonLabel='Show' likeBlog={handleLike} removeBlog={handleRemove} />)}
       </div>
     )
   }
