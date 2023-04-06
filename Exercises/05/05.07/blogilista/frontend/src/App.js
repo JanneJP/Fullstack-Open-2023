@@ -108,6 +108,14 @@ const App = () => {
     )
   }
 
+  const showBlogs = () => {
+    return (
+      <div>
+        {blogs.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show'/>)}
+      </div>
+    )
+  }
+
   return (
     <div>
       <Notification message={errorMessage} />
@@ -117,9 +125,7 @@ const App = () => {
         <h2>blogs</h2>
         <p>{user.name} logged in <button type="button" onClick={handleLogout}>Logout</button></p>
         {blogForm()}
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
+        {showBlogs()}
       </div>
       }
     </div>
