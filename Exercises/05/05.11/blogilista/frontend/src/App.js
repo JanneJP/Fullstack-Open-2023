@@ -74,6 +74,21 @@ const App = () => {
     setBlogs(blogs.filter(blog => blog.id !== updatedBlogObject.id).concat(updatedBlogObject))
   }
 
+  const handleRemove = async (blogObject) => {
+    if (blogObject.user.id !== user.id) {
+      flashError('Not the owner')
+      return
+    }
+
+    if (confirm('Are you sure you want to remove the blog?') === true) {
+      await blogService.remove(blogObject.id)
+
+      setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
+
+      flashNotification('Deleted successfully')
+    }
+  }
+
   const handleLogin = async (loginObject) => {
     try {
       const u = await loginService.login(loginObject)
@@ -126,10 +141,10 @@ const App = () => {
 
   const showBlogs = () => {
     const b = blogs.sort((a,b) => b.likes - a.likes)
-    console.log(b)
+
     return (
       <div>
-        {b.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show' likeBlog={handleLike} />)}
+        {b.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show' likeBlog={handleLike} removeBlog={handleRemove} />)}
       </div>
     )
   }

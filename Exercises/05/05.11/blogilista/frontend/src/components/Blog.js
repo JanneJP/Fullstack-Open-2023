@@ -15,6 +15,10 @@ const Blog = (props) => {
     props.likeBlog(props.blog)
   }
 
+  const removeBlog = () => {
+    props.removeBlog(props.blog)
+  }
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -22,8 +26,6 @@ const Blog = (props) => {
     borderWidth: 1,
     marginBottom: 5
   }
-
-  //console.log(props.blog)
 
   return (
     <div style={blogStyle}>
@@ -35,6 +37,7 @@ const Blog = (props) => {
         <p>{props.blog.url}</p>
         <p>Likes {props.blog.likes} <button onClick={likeBlog}>Like</button></p>
         <p>{props.blog.user.username}</p>
+        <button onClick={removeBlog}>Remove</button>
       </div>
     </div>
   )
