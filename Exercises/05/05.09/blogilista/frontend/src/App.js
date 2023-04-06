@@ -61,6 +61,19 @@ const App = () => {
     flashNotification('Logged out')
   }
 
+  const handleLike = async (blogObject) => {
+
+    let updatedBlogObject = {
+      ...blogObject
+    }
+
+    updatedBlogObject.likes += 1
+
+    await blogService.update(updatedBlogObject.id, updatedBlogObject)
+
+    setBlogs(blogs.filter(blog => blog.id !== updatedBlogObject.id).concat(updatedBlogObject))
+  }
+
   const handleLogin = async (loginObject) => {
     try {
       const u = await loginService.login(loginObject)
@@ -106,15 +119,17 @@ const App = () => {
   const blogForm = () => {
     return (
       <Togglable buttonLabel='New Blog' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog}/>
+        <BlogForm createBlog={addBlog} />
       </Togglable>
     )
   }
 
   const showBlogs = () => {
+    const b = blogs.sort((a,b) => b.likes - a.likes)
+    console.log(b)
     return (
       <div>
-        {blogs.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show'/>)}
+        {b.map(blog => <Blog key={blog.id} blog={blog} buttonLabel='Show' likeBlog={handleLike} />)}
       </div>
     )
   }

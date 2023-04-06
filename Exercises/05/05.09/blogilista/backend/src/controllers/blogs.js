@@ -52,23 +52,21 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const oldBlog = await Blog.findById(request.params.id)
 
   if (oldBlog === null) {
-    response.status(404).end()
+    return response.status(404).end()
   } else if ( oldBlog.user.toString() !== user._id.toString() ) {
     return response.status(403).json({ error: 'Not the owner' })
   } else {
-    response.status(204).end()
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
+
+    return response.status(204).json(updatedBlog)
   }
-
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
-  }
-
-  const updatedBlog = await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
-
-  response.status(204).json(updatedBlog)
 })
 
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {

@@ -11,6 +11,10 @@ const Blog = (props) => {
     setVisible(!visible)
   }
 
+  const likeBlog = () => {
+    props.likeBlog(props.blog)
+  }
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -29,7 +33,7 @@ const Blog = (props) => {
       <div style={showWhenVisible}>
         <p>{props.blog.title} by {props.blog.author} <button onClick={toggleVisibility}>Hide</button></p>
         <p>{props.blog.url}</p>
-        <p>Likes {props.blog.likes}</p>
+        <p>Likes {props.blog.likes} <button onClick={likeBlog}>Like</button></p>
         <p>{props.blog.user.username}</p>
       </div>
     </div>
