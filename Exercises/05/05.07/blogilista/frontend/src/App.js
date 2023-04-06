@@ -6,6 +6,7 @@ import blogService from './services/blogs'
 import userService from './services/users'
 import loginService from './services/login'
 
+import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
@@ -13,8 +14,6 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const [blogs, setBlogs] = useState([])
@@ -22,7 +21,7 @@ const App = () => {
   useEffect(() => {
     const userJSON = window.localStorage.getItem('user')
 
-    if (userJSON && userJSON !== 'null') {
+    if (userJSON) {
       const u = JSON.parse(userJSON)
       setUser(u)
       console.log('Found in local storage', u)
@@ -43,20 +42,28 @@ const App = () => {
 
   }, [user])
 
-  const handleLogout = () => {
-    loginService.logout()
-    setUser(null)
-    setNotificationMessage('Logged out')
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
+  const flashNotification = (message) => {
+    console.log(message)
+    setNotificationMessage(message)
+    setTimeout(() => {setNotificationMessage(null)}, 3000)
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const flashError = (message, exception) => {
+    setErrorMessage(message)
+    console.error(exception)
+    setTimeout(() => {setErrorMessage(null)}, 3000)
+  }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('login')
+    window.localStorage.removeItem('user')
+    setUser(null)
+    flashNotification('Logged out')
+  }
+
+  const handleLogin = async (loginObject) => {
     try {
-      const u = await loginService.login({ username, password })
+      const u = await loginService.login(loginObject)
 
       blogService.setToken(u.token)
 
@@ -68,45 +75,12 @@ const App = () => {
 
       window.localStorage.setItem('user', JSON.stringify(u))
       console.log('Saving into local storage', u)
-      setUsername('')
-      setPassword('')
-      setNotificationMessage('Logged in')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+
+      flashNotification('Logged in')
     } catch (exception) {
-      console.log(exception)
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      flashError('Wrong credentials', exception)
     }
   }
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h2>Log in to application</h2>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
 
   const addBlog = async (blogObject) => {
     try {
@@ -114,21 +88,19 @@ const App = () => {
 
       setBlogs(blogs.concat(returnedBlog))
 
-      setNotificationMessage('New blog added')
-      setTimeout(() => { setNotificationMessage(null) }, 5000)
+      flashNotification('New blog added')
     } catch (exception) {
-      let message = exception.message
-      if (exception.response) {
-        message = exception.response.data.error
-      }
-      console.log(message)
-      setErrorMessage(message)
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      flashError('Something went wrong', exception)
     }
   }
 
-  const blogForm = () => {
+  const loginForm = () => {
+    return (
+      <LoginForm handleLogin={handleLogin}/>
+    )
+  }
 
+  const blogForm = () => {
     return (
       <Togglable buttonLabel='New Blog'>
         <BlogForm createBlog={addBlog}/>

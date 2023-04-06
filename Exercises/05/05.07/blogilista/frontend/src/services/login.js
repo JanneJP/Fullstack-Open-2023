@@ -8,9 +8,5 @@ const login = async credentials => {
   return response.data
 }
 
-const logout = () => {
-  window.localStorage.removeItem('login')
-  window.localStorage.removeItem('user')
-}
 
-export default { login, logout }
+export default { login }
