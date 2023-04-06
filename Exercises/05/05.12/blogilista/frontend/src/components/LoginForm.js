@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState('')
@@ -41,6 +41,10 @@ const LoginForm = ({ handleLogin }) => {
       <button type="submit">login</button>
     </form>
   )
+}
+
+LoginForm.propTypes = {
+  handleLogin: PropTypes.func.isRequired
 }
 
 export default LoginForm

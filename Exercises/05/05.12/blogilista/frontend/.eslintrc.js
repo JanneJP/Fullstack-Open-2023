@@ -10,7 +10,7 @@ module.exports = {
     'commonjs': true,
     'es2021': true,
     'node': true,
-    'jest': true
+    'jest/globals': true
   },
   'extends': [
     'eslint:recommended',
@@ -48,6 +48,8 @@ module.exports = {
     'arrow-spacing': [
       'error', { 'before': true, 'after': true }
     ],
-    'no-console': 0
+    'no-console': 0,
+    'react/prop-types': 0,
+    'react/react-in-jsx-scope': 'off'
   }
 }

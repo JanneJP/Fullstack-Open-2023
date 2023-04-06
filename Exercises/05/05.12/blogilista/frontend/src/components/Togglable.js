@@ -1,6 +1,5 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
 import { useState, useImperativeHandle, forwardRef } from 'react'
+import PropTypes from 'prop-types'
 
 const Togglable = forwardRef(( props, ref ) => {
   const [visible, setVisible] = useState(false)
@@ -30,5 +29,15 @@ const Togglable = forwardRef(( props, ref ) => {
     </div>
   )
 })
+
+Togglable.displayName = 'Togglable'
+
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]).isRequired
+}
 
 export default Togglable
