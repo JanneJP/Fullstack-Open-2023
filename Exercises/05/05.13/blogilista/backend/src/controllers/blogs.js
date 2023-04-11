@@ -12,20 +12,12 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
 
-  return blog ? response.json(blog) : response.status(404).end()
+  return blog ? response.json(blog) : response.status(404).json({ error: 'Resource not found' })
 })
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const body = request.body
   const user = request.user
-
-  if (!body.title) {
-    return response.status(400).json({ error: 'Title required' })
-  }
-
-  if (!body.url) {
-    return response.status(400).json({ error: 'Url required' })
-  }
 
   const blog = new Blog({
     title: body.title,
@@ -62,17 +54,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   }
 
   if (oldBlog === null) {
-    const blog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes,
-      user: user._id
-    })
-
-    await blog.save()
-
-    return response.status(201).json(blog)
+    return response.status(404).json({ error: 'Resource not found' })
   } else if (likedBlog(oldBlog, request.body)) {
     const blog = {
       title: body.title,
@@ -83,7 +65,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
     await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
 
-    return response.status(200).end()
+    return response.status(204).end()
   } else if ( oldBlog.user.toString() !== user._id.toString() ) {
     return response.status(403).json({ error: 'Not the owner' })
   } else {
@@ -94,9 +76,17 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
       likes: body.likes
     }
 
+    if (!blog.title) {
+      response.status(400).json({ error: 'Missing title' })
+    } else if (!blog.author) {
+      response.status(400).json({ error: 'Missing author' })
+    } else if (!blog.url) {
+      response.status(400).json({ error: 'Missing url' })
+    }
+
     await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
 
-    return response.status(200).end()
+    return response.status(204).end()
   }
 })
 
@@ -106,7 +96,7 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
   const blog = await Blog.findByIdAndRemove(request.params.id)
 
   if (blog === null) {
-    response.status(404).end()
+    response.status(404).json({ error: 'Resource not found' })
   } else if ( blog.user.toString() !== user._id.toString() ) {
     return response.status(403).json({ error: 'Not the owner' })
   } else {

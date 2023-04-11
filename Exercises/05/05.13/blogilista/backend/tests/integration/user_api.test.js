@@ -52,7 +52,7 @@ describe('GET /api/users requests', () => {
 })
 
 describe('GET /api/users/:id requests', () => {
-  test('Users are returned in correct format with status code 200', async () => {
+  test('Individual users are returned in correct format with status code 200', async () => {
     let userResponse = await api
       .get('/api/users')
 
