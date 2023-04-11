@@ -316,7 +316,7 @@ describe('when there is initially some blogs saved', () => {
   })
 
   describe('updating a blog', () => {
-    test('Succeeds with status code 204 if id is valid', async () => {
+    test('Succeeds with status code 200 if id is valid', async () => {
       const loginResponse = await loginUser(helper.initialUser)
 
       const token = loginResponse.body.token
@@ -342,21 +342,18 @@ describe('when there is initially some blogs saved', () => {
         likes: newLikes
       }
 
-      const updateResponse = await api
+      await api
         .put(`/api/blogs/${response.body.id}`)
         .send(updatedBlog)
         .set('Authorization', `Bearer ${token}`)
-        .expect(204)
-        .expect('Content-Type', /application\/json/)
+        .expect(200)
 
       const blogsAtEnd = await helper.blogsInDb()
 
       expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
-
-      expect(updateResponse.body.likes).toBe(newLikes)
     })
 
-    test('Failure with status code 404 if id is invalid', async () => {
+    test('Success with status code 201 if no match for id is found', async () => {
       const loginResponse = await loginUser(helper.initialUser)
 
       const token = loginResponse.body.token
@@ -385,28 +382,209 @@ describe('when there is initially some blogs saved', () => {
 
       const validNonexistingId = await helper.nonExistingId()
 
-      await api
+      const updateResponse = await api
         .put(`/api/blogs/${validNonexistingId}`)
         .send(updatedBlog)
         .set('Authorization', `Bearer ${token}`)
-        .expect(404)
+        .expect(201)
+
+      expect(updateResponse.body).toHaveProperty('id')
 
       const blogsAtEnd = await helper.blogsInDb()
 
-      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
+      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length + 1)
 
       const likes = blogsAtEnd.map(blog => blog.likes)
 
       expect(likes).toContain(newBlog.likes)
     })
+
+    test('Success with status code 200 if title is updated', async () => {
+      const loginResponse = await loginUser(helper.initialUser)
+
+      const token = loginResponse.body.token
+
+      const newBlog = {
+        title: 'The Flask Mega-Tutorial Part X: Email Support',
+        author: 'Miguel Grinberg',
+        url: 'https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support',
+        likes: 947
+      }
+
+      const blogResponse = await publishBlog(newBlog, token)
+
+      const blogsAtMiddle = await helper.blogsInDb()
+
+      expect(blogsAtMiddle).toHaveLength(helper.initialBlog.length + 1)
+
+      expect(blogResponse.body.title).toContain('The Flask Mega-Tutorial Part X: Email Support')
+
+      const newTitle = 'New test title'
+
+      const updatedBlog = {
+        ...newBlog,
+        title: newTitle
+      }
+
+      await api
+        .put(`/api/blogs/${blogResponse.body.id}`)
+        .send(updatedBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
+
+      const titles = blogsAtEnd.map(blog => blog.title)
+
+      expect(titles).toContain(updatedBlog.title)
+    })
+
+    test('Success with status code 200 if author is updated', async () => {
+      const loginResponse = await loginUser(helper.initialUser)
+
+      const token = loginResponse.body.token
+
+      const newBlog = {
+        title: 'The Flask Mega-Tutorial Part X: Email Support',
+        author: 'Miguel Grinberg',
+        url: 'https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support',
+        likes: 947
+      }
+
+      const blogResponse = await publishBlog(newBlog, token)
+
+      const blogsAtMiddle = await helper.blogsInDb()
+
+      expect(blogsAtMiddle).toHaveLength(helper.initialBlog.length + 1)
+
+      expect(blogResponse.body.title).toContain('The Flask Mega-Tutorial Part X: Email Support')
+
+      const newAuthor = 'New test author'
+
+      const updatedBlog = {
+        ...newBlog,
+        author: newAuthor
+      }
+
+      await api
+        .put(`/api/blogs/${blogResponse.body.id}`)
+        .send(updatedBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
+
+      const authors = blogsAtEnd.map(blog => blog.author)
+
+      expect(authors).toContain(updatedBlog.author)
+    })
+
+    test('Success with status code 200 if url is updated', async () => {
+      const loginResponse = await loginUser(helper.initialUser)
+
+      const token = loginResponse.body.token
+
+      const newBlog = {
+        title: 'The Flask Mega-Tutorial Part X: Email Support',
+        author: 'Miguel Grinberg',
+        url: 'https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support',
+        likes: 947
+      }
+
+      const blogResponse = await publishBlog(newBlog, token)
+
+      const blogsAtMiddle = await helper.blogsInDb()
+
+      expect(blogsAtMiddle).toHaveLength(helper.initialBlog.length + 1)
+
+      expect(blogResponse.body.title).toContain('The Flask Mega-Tutorial Part X: Email Support')
+
+      const newUrl = 'New test url'
+
+      const updatedBlog = {
+        ...newBlog,
+        url: newUrl
+      }
+
+      await api
+        .put(`/api/blogs/${blogResponse.body.id}`)
+        .send(updatedBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
+
+      const urls = blogsAtEnd.map(blog => blog.url)
+
+      expect(urls).toContain(updatedBlog.url)
+    })
+
+    test('Failure with status code 403 if user is not the owner', async () => {
+      let loginResponse = await loginUser(helper.initialUser)
+
+      let token = loginResponse.body.token
+
+      const newBlog = {
+        title: 'The Flask Mega-Tutorial Part X: Email Support',
+        author: 'Miguel Grinberg',
+        url: 'https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support',
+        likes: 947
+      }
+
+      const blogResponse = await publishBlog(newBlog, token)
+
+      const blogsAtMiddle = await helper.blogsInDb()
+
+      expect(blogsAtMiddle).toHaveLength(helper.initialBlog.length + 1)
+
+      expect(blogResponse.body.title).toContain('The Flask Mega-Tutorial Part X: Email Support')
+
+      const newUser = {
+        username: 'test_user2',
+        name: 'Test User2',
+        password: 'password',
+      }
+
+      helper.createUser(newUser)
+
+      loginResponse = await loginUser(newUser)
+
+      token = loginResponse.body.token
+
+      const newAuthor = 'New test author'
+
+      const updatedBlog = {
+        ...newBlog,
+        author: newAuthor
+      }
+
+      await api
+        .put(`/api/blogs/${blogResponse.body.id}`)
+        .send(updatedBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd.length).toBe(blogsAtMiddle.length)
+
+      const authors = blogsAtEnd.map(blog => blog.author)
+
+      expect(authors).toContain(newBlog.author)
+    })
   })
 })
 
-
-describe('/api/blogs GET', () => {
-
-})
-
 afterAll(async () => {
+  await User.deleteMany({})
+
+  await Blog.deleteMany({})
+
   await mongoose.connection.close()
 })

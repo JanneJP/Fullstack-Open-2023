@@ -62,7 +62,17 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   }
 
   if (oldBlog === null) {
-    return response.status(404).end()
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
+
+    await blog.save()
+
+    return response.status(201).json(blog)
   } else if (likedBlog(oldBlog, request.body)) {
     const blog = {
       title: body.title,
@@ -71,9 +81,9 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
       likes: body.likes
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
+    await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
 
-    return response.status(204).json(updatedBlog)
+    return response.status(200).end()
   } else if ( oldBlog.user.toString() !== user._id.toString() ) {
     return response.status(403).json({ error: 'Not the owner' })
   } else {
@@ -84,9 +94,9 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
       likes: body.likes
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
+    await Blog.findByIdAndUpdate(oldBlog.id, blog, { new: true })
 
-    return response.status(204).json(updatedBlog)
+    return response.status(200).end()
   }
 })
 
