@@ -32,7 +32,7 @@ const Blog = (props) => {
       <div style={hideWhenVisible}>
         <p>{props.blog.title} <button onClick={toggleVisibility}>{props.buttonLabel}</button></p>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="togglableContent">
         <p>{props.blog.title} by {props.blog.author} <button onClick={toggleVisibility}>Hide</button></p>
         <p>{props.blog.url}</p>
         <p>Likes {props.blog.likes} <button onClick={likeBlog}>Like</button></p>

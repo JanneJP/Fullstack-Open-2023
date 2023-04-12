@@ -87,7 +87,7 @@ describe('GET /api/users/:id requests', () => {
   })
 })
 
-describe('POST requests', () => {
+describe('POST /api/users requests', () => {
   test('New user with valid unique credentials can be created', async () => {
     const newUser = {
       username: 'new_user',
