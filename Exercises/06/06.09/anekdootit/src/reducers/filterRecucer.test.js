@@ -17,7 +17,7 @@ describe('Filter reducer', () => {
 
   test('Correct filter string', () => {
     const action = {
-      type: 'SET_FILTER',
+      type: 'filter/filterChange',
       payload: {
         filter: 'TEST FILTER STRING'
       }
@@ -29,6 +29,6 @@ describe('Filter reducer', () => {
 
     const newState = filterReducer(state, action)
 
-    expect(newState).toBe('TEST FILTER STRING')
+    expect(newState).toStrictEqual({filter: 'TEST FILTER STRING'})
   })
 })

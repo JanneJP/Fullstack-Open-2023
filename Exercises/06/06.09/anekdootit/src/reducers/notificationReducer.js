@@ -3,14 +3,17 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = ''
 
 const filterSlice = createSlice({
-  name: 'filter',
+  name: 'notification',
   initialState,
   reducers: {
-    filterChange(state, action) {
+    notificationSet(state, action) {
       return action.payload
+    },
+    notificationClear(state, action) {
+      return ''
     }
   }
 })
 
-export const { filterChange } = filterSlice.actions
+export const { notificationSet, notificationClear } = filterSlice.actions
 export default filterSlice.reducer
