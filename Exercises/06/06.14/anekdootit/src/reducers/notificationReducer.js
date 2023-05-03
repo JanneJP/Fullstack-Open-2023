@@ -16,4 +16,14 @@ const filterSlice = createSlice({
 })
 
 export const { notificationSet, notificationClear } = filterSlice.actions
+
+export const setNotification = ( content, timer ) => {
+  return dispatch => {
+    dispatch(notificationSet(content))
+    setTimeout(() => {
+      dispatch(notificationClear())
+    }, timer*1000);
+  }
+}
+
 export default filterSlice.reducer

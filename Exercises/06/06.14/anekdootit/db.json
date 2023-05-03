@@ -3,7 +3,7 @@
     {
       "id": 1,
       "content": "If it hurts, do it more often",
-      "votes": 4
+      "votes": 6
     },
     {
       "id": 2,
@@ -59,6 +59,11 @@
       "content": "sdgsdgsdgsdgsdgsdgs",
       "votes": 0,
       "id": 12
+    },
+    {
+      "content": "qwfqwfwqfqwfqwfqwsaf",
+      "votes": 0,
+      "id": 13
     }
   ]
 }
