@@ -3,7 +3,7 @@
     {
       "id": 1,
       "content": "If it hurts, do it more often",
-      "votes": 0
+      "votes": 4
     },
     {
       "id": 2,
@@ -32,13 +32,33 @@
     },
     {
       "content": "ewgqeqgqgqg",
-      "votes": 0,
+      "votes": 1,
       "id": 7
     },
     {
       "content": "wfqwfwqfqwfqwfq",
-      "votes": 0,
+      "votes": 1,
       "id": 8
+    },
+    {
+      "content": "etqtqwttqqwqt",
+      "votes": 1,
+      "id": 9
+    },
+    {
+      "content": "dgsdgsdgsdgsdgsd",
+      "votes": 2,
+      "id": 10
+    },
+    {
+      "content": "etwetewtewtewt",
+      "votes": 1,
+      "id": 11
+    },
+    {
+      "content": "sdgsdgsdgsdgsdgsdgs",
+      "votes": 0,
+      "id": 12
     }
   ]
 }

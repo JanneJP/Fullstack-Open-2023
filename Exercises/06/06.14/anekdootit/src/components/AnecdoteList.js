@@ -29,7 +29,6 @@ const Anecdotes = () => {
   const sortedAnecdotes = anecdotes.map(anecdote => anecdote).sort((a,b) => b.votes - a.votes)
 
   const voteHandler = (anecdote) => {
-    console.log('a')
     dispatch(voteAnecdote(anecdote.id))
     dispatch(notificationSet(`You voted '${anecdote.content}'`))
     setTimeout(() => {
