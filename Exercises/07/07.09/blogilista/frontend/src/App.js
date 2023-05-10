@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useReducer } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -10,9 +10,10 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
+import notificationReducer from './reducers/notificationReducer'
+
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
 
   const [user, setUser] = useState(null)
 
@@ -42,23 +43,21 @@ const App = () => {
 
   }, [user])
 
-  const flashNotification = (message) => {
-    console.log(message)
-    setNotificationMessage(message)
-    setTimeout(() => {setNotificationMessage(null)}, 3000)
-  }
-
-  const flashError = (message, exception) => {
-    setErrorMessage(message)
-    console.error(exception)
-    setTimeout(() => {setErrorMessage(null)}, 3000)
+  const flash = (notification, type=null) => {
+    console.log(notification)
+    const payload = {
+      message: notification,
+      type: type
+    }
+    notificationDispatch({ type: 'SET', payload: payload })
+    setTimeout(() => { notificationDispatch({ type: 'CLEAR' }) }, 5000)
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('login')
     window.localStorage.removeItem('user')
     setUser(null)
-    flashNotification('Logged out')
+    flash('Logged out')
   }
 
   const handleLike = async (blogObject) => {
@@ -76,7 +75,7 @@ const App = () => {
 
   const handleRemove = async (blogObject) => {
     if (blogObject.user.id !== user.id) {
-      flashError('Not the owner')
+      flash('Not the owner')
       return
     }
 
@@ -85,7 +84,7 @@ const App = () => {
 
       setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
 
-      flashNotification('Deleted successfully')
+      flash('Deleted successfully')
     }
   }
 
@@ -100,9 +99,9 @@ const App = () => {
       window.localStorage.setItem('user', JSON.stringify(u))
       console.log('Saving into local storage', u)
 
-      flashNotification('Logged in')
+      flash('Logged in')
     } catch (exception) {
-      flashError('Wrong credentials', exception)
+      flash('Wrong credentials', 'ERROR')
     }
   }
 
@@ -119,9 +118,9 @@ const App = () => {
       console.log(returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
 
-      flashNotification('New blog added')
+      flash('New blog added')
     } catch (exception) {
-      flashError('Something went wrong', exception)
+      flash('Something went wrong')
     }
   }
 
@@ -151,8 +150,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={errorMessage} />
-      <Notification message={notificationMessage} />
+      <Notification notification={notification} />
       {!user && loginForm()}
       {user && <div>
         <h2>blogs</h2>

@@ -20,7 +20,7 @@ Start local mongo container
 
 Start backend
 
-  npm start:test
+  npm run start:test
 
 Start Frontend
 
