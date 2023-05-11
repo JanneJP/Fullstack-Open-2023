@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
-import { getBlogs, createBlog } from './services/blogs'
+import { getBlogs, createBlog, updateBlog, removeBlog } from './services/blogs'
 import loginService from './services/login'
 //import userService from './services/users'
 
@@ -21,11 +21,24 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const blogs = useQuery('blogs', getBlogs)
+
   const newBlogMutation = useMutation(createBlog, {
     onSuccess: () => {
       console.log('Refreshing blogs')
       queryClient.invalidateQueries('blogs')
     }
+  })
+
+  const updateBlogMutation = useMutation(updateBlog, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    },
+  })
+
+  const removeBlogMutation = useMutation(removeBlog, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    },
   })
 
   useEffect(() => {
@@ -56,17 +69,8 @@ const App = () => {
     flash('Logged out')
   }
 
-  const handleLike = async (blogObject) => {
-
-    let updatedBlogObject = {
-      ...blogObject
-    }
-
-    updatedBlogObject.likes += 1
-
-    await blogService.update(updatedBlogObject.id, updatedBlogObject)
-
-    //setBlogs(blogs.filter(blog => blog.id !== updatedBlogObject.id).concat(updatedBlogObject))
+  const handleLike = (blogObject) => {
+    updateBlogMutation.mutate({ ...blogObject, likes: blogObject.likes + 1 })
   }
 
   const handleRemove = async (blogObject) => {
@@ -76,10 +80,7 @@ const App = () => {
     }
 
     if (confirm('Are you sure you want to remove the blog?') === true) {
-      await blogService.remove(blogObject.id)
-
-      //setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
-
+      removeBlogMutation.mutate({ ...blogObject })
       flash('Deleted successfully')
     }
   }
@@ -106,14 +107,8 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
+
       newBlogMutation.mutate(blogObject)
-      //let returnedBlog = await blogService.create(blogObject)
-
-      //const u = await userService.getUser(returnedBlog.user)
-
-      //returnedBlog.user = u
-      //console.log(returnedBlog)
-      //setBlogs(blogs.concat(returnedBlog))
 
       flash('New blog added')
     } catch (exception) {
