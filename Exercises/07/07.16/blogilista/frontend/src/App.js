@@ -5,11 +5,10 @@ import {
   Routes, Route, Link, useParams
 } from 'react-router-dom'
 
-import Blog from './components/Blog'
 import { User } from './components/User'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
-import { getBlogs, createBlog, updateBlog, removeBlog } from './services/blogs'
+import { getBlogs, createBlog, updateBlog } from './services/blogs'
 import { getAllUsers } from './services/users'
 import loginService from './services/login'
 //import userService from './services/users'
@@ -41,12 +40,13 @@ const App = () => {
       queryClient.invalidateQueries('blogs')
     },
   })
-
+  /*
   const removeBlogMutation = useMutation(removeBlog, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs')
     },
   })
+  */
 
   useEffect(() => {
     const userJSON = window.localStorage.getItem('user')
@@ -79,7 +79,7 @@ const App = () => {
   const handleLike = (blogObject) => {
     updateBlogMutation.mutate({ ...blogObject, likes: blogObject.likes + 1 })
   }
-
+  /*
   const handleRemove = async (blogObject) => {
     if (blogObject.user.id !== user.id) {
       flash('Not the owner')
@@ -91,6 +91,7 @@ const App = () => {
       flash('Deleted successfully')
     }
   }
+  */
 
   const handleLogin = async (loginObject) => {
     try {
@@ -160,7 +161,12 @@ const App = () => {
     }
 
     return (
-      <p>{user.name} logged in <button id="logout-button" type="button" onClick={handleLogout}>Logout</button></p>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/blogs">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+        {user.name} logged in <button id="logout-button" type="button" onClick={handleLogout}>Logout</button>
+      </div>
     )
   }
 
@@ -189,7 +195,7 @@ const App = () => {
 
   const BlogRow = ({ blog }) => {
     return (
-      <li>{blog.title}</li>
+      <li><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></li>
     )
   }
 
@@ -212,6 +218,25 @@ const App = () => {
     )
   }
 
+  const BlogView = ({ blogs, likeBlog }) => {
+    const id = useParams().id
+
+    if ( blogs.isLoading ) {
+      return <div>loading data...</div>
+    }
+
+    const blog = blogs.data.find(b => b.id === id)
+
+    return (
+      <div>
+        <h2>{blog.title} {blog.author}</h2>
+        <p>{blog.url}</p>
+        <p>{blog.likes} likes</p><button className="likeButton" onClick={() => {likeBlog(blog)}}>Like</button>
+        <p>Added by {blog.user.name}</p>
+      </div>
+    )
+  }
+
   const Blogs = () => {
     if (!user) {
       return null
@@ -229,7 +254,8 @@ const App = () => {
 
     return (
       <div>
-        {b.map(blog => <Blog key={blog.id} blog={blog} user={user} buttonLabel='Show' likeBlog={handleLike} removeBlog={handleRemove} />)}
+        <h2>Blogs</h2>
+        {b.map(blog => <BlogRow key={blog.id} blog={blog} />)}
       </div>
     )
   }
@@ -242,17 +268,12 @@ const App = () => {
     <Router>
       <Navigation />
 
-      <div>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/blogs">blogs</Link>
-        <Link style={padding} to="/users">users</Link>
-      </div>
-
       <Notification notification={notification} />
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:id" element={<BlogView blogs={blogs} likeBlog={handleLike} />} />
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<UserView users={users} />} />
       </Routes>
