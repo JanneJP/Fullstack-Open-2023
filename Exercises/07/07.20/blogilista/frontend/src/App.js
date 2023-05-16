@@ -2,8 +2,9 @@ import { useEffect, useRef, useReducer } from 'react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link, useParams
+  Routes, Route, Link, useParams, Navigate
 } from 'react-router-dom'
+import Table from 'react-bootstrap/Table'
 
 import { User } from './components/User'
 import Notification from './components/Notification'
@@ -189,13 +190,17 @@ const App = () => {
     return (
       <div>
         <h2>Users</h2>
-        <table>
-          <tr>
-            <th></th>
-            <th>Blogs created</th>
-          </tr>
-          {users.data.map(user => <User key={user.id} user={user}/>)}
-        </table>
+        <Table striped>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Blogs created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.data.map(user => <User key={user.id} user={user}/>)}
+          </tbody>
+        </Table>
       </div>
     )
   }
@@ -275,19 +280,21 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <Navigation />
+    <div className="container">
+      <Router>
+        <Navigation />
 
-      <Notification notification={notification} />
+        <Notification notification={notification} />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/blogs/:id" element={<BlogView blogs={blogs} likeBlog={handleLike} />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/users/:id" element={<UserView users={users} />} />
-      </Routes>
-    </Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blogs" element={user ? <Blogs /> : <Navigate replace to="/" />} />
+          <Route path="/blogs/:id" element={user ? <BlogView blogs={blogs} likeBlog={handleLike} /> : <Navigate replace to="/" /> } />
+          <Route path="/users" element={user ? <Users /> : <Navigate replace to="/" />} />
+          <Route path="/users/:id" element={user ? <UserView users={users} /> : <Navigate replace to="/" />} />
+        </Routes>
+      </Router>
+    </div>
   )
 }
 
