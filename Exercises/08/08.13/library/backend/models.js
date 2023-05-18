@@ -36,7 +36,23 @@ const authorSchema = new mongoose.Schema({
 
 authorSchema.plugin(uniqueValidator)
 
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 3
+  },
+  favoriteGenre: {
+    type: String,
+    required: true
+  }
+})
+
+userSchema.plugin(uniqueValidator)
+
 module.exports = {
   authorModel: mongoose.model('Author', authorSchema),
-  bookModel: mongoose.model('Book', bookSchema)
+  bookModel: mongoose.model('Book', bookSchema),
+  userModel: mongoose.model('User', userSchema)
 }
