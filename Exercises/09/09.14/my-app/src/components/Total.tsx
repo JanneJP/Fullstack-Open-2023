@@ -1,5 +1,8 @@
-import { CourseParts as TotalProps } from "../types";
+import { CoursePart } from "../types";
 
+interface TotalProps {
+  courseParts: CoursePart[]
+}
 export const Total = (props: TotalProps): JSX.Element => {
   
   return (
