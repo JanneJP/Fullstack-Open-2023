@@ -18,7 +18,7 @@ export const updateCache = (cache, query, addedBook) => {
       return seen.has(k) ? false : seen.add(k)
     })
   }
-  console.log(cache)
+
   cache.updateQuery(query, ({ allBooks }) => {
     return {
       allBooks: uniqByName(allBooks.concat(addedBook)),
