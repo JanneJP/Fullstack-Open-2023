@@ -1,9 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import patientData from '../../data/patients.json';
+import patients from '../../data/patients';
 import { PatientData, NonSensitivePatientData, NewPatientData } from '../types';
-
-const patients: PatientData[] = patientData as PatientData[];
 
 const findById = (id: string): PatientData | undefined => {
   const patient = patients.find(d => d.id === id);
