@@ -11,6 +11,17 @@ router.get('/', (_req, res) => {
   res.send(patientService.getPatientsNoSsn());
 });
 
+router.get('/:id', (req, res) => {
+  console.log('Fetching patient!');
+  const patient = patientService.findById(req.params.id);
+
+  if (patient) {
+    res.send(patient);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 router.post('/', (req, res) => {
   console.log('Adding new patient');
 

@@ -5,6 +5,12 @@ import { PatientData, NonSensitivePatientData, NewPatientData } from '../types';
 
 const patients: PatientData[] = patientData as PatientData[];
 
+const findById = (id: string): PatientData | undefined => {
+  const patient = patients.find(d => d.id === id);
+
+  return patient;
+};
+
 const getPatients = (): PatientData[] => {
   return patients;
 };
@@ -33,5 +39,6 @@ const addPatient = (patient: NewPatientData): PatientData => {
 export default {
   getPatients,
   getPatientsNoSsn,
-  addPatient
+  addPatient,
+  findById
 };
