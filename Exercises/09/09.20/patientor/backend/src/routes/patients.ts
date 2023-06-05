@@ -1,7 +1,7 @@
 import express from 'express';
 
 import patientService from '../services/patientService';
-import toNewPatientData from '../utils';
+import toNewPatient from '../utils';
 
 const router = express.Router();
 
@@ -26,9 +26,9 @@ router.post('/', (req, res) => {
   console.log('Adding new patient');
 
   try {
-    const newPatientData = toNewPatientData(req.body);
+    const newPatient = toNewPatient(req.body);
 
-    const addedPatient = patientService.addPatient(newPatientData);
+    const addedPatient = patientService.addPatient(newPatient);
 
     res.json(addedPatient);
   } catch (error: unknown) {

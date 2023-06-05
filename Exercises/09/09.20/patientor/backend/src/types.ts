@@ -1,4 +1,4 @@
-export interface DiagnosisData {
+export interface Diagnosis {
   code: string,
   name: string,
   latin?: string
@@ -9,7 +9,7 @@ interface BaseEntry {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes?: Array<DiagnosisData['code']>;
+  diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 interface Discharge {
@@ -40,7 +40,7 @@ interface OccupationalHealthcareEntry extends BaseEntry {
 
 export type Entry = | HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
-export interface PatientData {
+export interface Patient {
   id: string,
   name: string,
   dateOfBirth: string,
@@ -63,6 +63,6 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
-export type NonSensitivePatientData = Omit<PatientData, 'ssn' | 'entries'>;
+export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
-export type NewPatientData = Omit<PatientData, 'id'>;
+export type NewPatient = Omit<Patient, 'id'>;
