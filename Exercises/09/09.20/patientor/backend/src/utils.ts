@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from './types';
+import { NewPatient, Gender, NewDiagnosis } from './types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -10,6 +10,22 @@ const parseName = (name: unknown): string => {
   }
 
   return name;
+};
+
+const parseCode = (code: unknown): string => {
+  if (!code || !isString(code)) {
+    throw new Error('Incorrect or missing code');
+  }
+
+  return code;
+};
+
+const parseLatin = (latin: unknown): string => {
+  if (!latin || !isString(latin)) {
+    throw new Error('Incorrect or missing latin');
+  }
+
+  return latin;
 };
 
 const isDate = (date: string): boolean => {
@@ -52,7 +68,7 @@ const parseOccupation = (occupation: unknown): string => {
   return occupation;
 };
 
-const toNewPatient = (object: unknown): NewPatient => {
+export const toNewPatient = (object: unknown): NewPatient => {
   if ( !object || typeof object !== 'object' ) {
     throw new Error('Incorrect or missing data');
   }
@@ -73,4 +89,25 @@ const toNewPatient = (object: unknown): NewPatient => {
   throw new Error('Incorrect data: some fields are missing');
 };
 
-export default toNewPatient;
+export const toNewDiagnosis = (object: unknown): NewDiagnosis => {
+  if ( !object || typeof object !== 'object' ) {
+    throw new Error('Incorrect or missing data');
+  }
+
+  if ('code' in object && 'name' in object) {
+    let latin = undefined;
+
+    if ('latin' in object) {
+      latin = parseLatin(object.latin);
+    }
+    const newDiagnosis: NewDiagnosis = {
+      code: parseCode(object.code),
+      name: parseName(object.name),
+      latin: latin
+    };
+
+    return newDiagnosis;
+  }
+
+  throw new Error('Incorrect data: some fields are missing');
+};

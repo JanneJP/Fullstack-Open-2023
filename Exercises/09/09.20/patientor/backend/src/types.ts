@@ -1,4 +1,5 @@
 export interface Diagnosis {
+  id: string,
   code: string,
   name: string,
   latin?: string
@@ -66,3 +67,5 @@ export enum HealthCheckRating {
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
 export type NewPatient = Omit<Patient, 'id'>;
+
+export type NewDiagnosis = Omit<Diagnosis, 'id'>;
