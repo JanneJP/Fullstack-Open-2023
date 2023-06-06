@@ -1,4 +1,5 @@
 export interface Diagnosis {
+  id: string,
   code: string,
   name: string,
   latin?: string
@@ -38,7 +39,7 @@ interface OccupationalHealthcareEntry extends BaseEntry {
   sickLeave?: SickLeave;
 }
 
-export type Entry = | HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
+export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
 export enum HealthCheckRating {
   "Healthy" = 0,

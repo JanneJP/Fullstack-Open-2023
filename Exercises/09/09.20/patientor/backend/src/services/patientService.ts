@@ -24,14 +24,14 @@ const getPatientsNoSsn = (): NonSensitivePatient[] => {
 
 const addPatient = (patient: NewPatient): Patient => {
 
-  const newPatientData = {
+  const newPatient = {
     id: uuidv4(),
     ...patient
   };
 
-  patients.push(newPatientData);
+  patients.push(newPatient);
 
-  return newPatientData;
+  return newPatient;
 };
 
 export default {
