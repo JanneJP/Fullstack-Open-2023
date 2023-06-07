@@ -13,12 +13,12 @@ interface BaseEntry {
   diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
-interface Discharge {
+export interface Discharge {
   date: string;
   criteria: string;
 }
 
-interface SickLeave {
+export interface SickLeave {
   startDate: string;
   endDate: string;
 }
@@ -64,8 +64,16 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
 export type NewPatient = Omit<Patient, 'id'>;
 
 export type NewDiagnosis = Omit<Diagnosis, 'id'>;
+
+export type NewHealtcheckEntry = UnionOmit<HealthCheckEntry, 'id'>;
+
+export type NewHospitalEntry = UnionOmit<HospitalEntry, 'id'>;
+
+export type NewOccupationalHealthcareEntry = UnionOmit<OccupationalHealthcareEntry, 'id'>;

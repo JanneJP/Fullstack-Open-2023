@@ -34,9 +34,16 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
+const updatePatient = (patient: Patient): Patient => {
+  patients.map(p => p.id !== patient.id ? p : patient);
+
+  return patient;
+};
+
 export default {
   getPatients,
   getPatientsNoSsn,
   addPatient,
-  findById
+  findById,
+  updatePatient
 };
