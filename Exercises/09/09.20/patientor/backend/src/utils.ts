@@ -148,13 +148,13 @@ const parseSpecialist = (specialist: unknown): string => {
   return specialist;
 };
 
-const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
-  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
-    // we will just trust the data to be in correct form
+const parseDiagnosisCodes = (diagnosisCodes: unknown): Array<Diagnosis['code']> =>  {
+  if (!diagnosisCodes || !Array.isArray(diagnosisCodes)) {
+
     return [] as Array<Diagnosis['code']>;
   }
 
-  return object.diagnosisCodes as Array<Diagnosis['code']>;
+  return diagnosisCodes as Array<Diagnosis['code']>;
 };
 
 const parseHealthCheckRating = (healthCheckRating: unknown): HealthCheckRating => {
