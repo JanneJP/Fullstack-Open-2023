@@ -39,7 +39,7 @@ interface OccupationalHealthcareEntry extends BaseEntry {
   sickLeave?: SickLeave;
 }
 
-export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
+export type Entry = HealthCheckEntry | HospitalEntry | OccupationalHealthcareEntry;
 
 export enum HealthCheckRating {
   "Healthy" = 0,

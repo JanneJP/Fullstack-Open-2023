@@ -53,13 +53,45 @@ const PatientEntries = (props: PatientEntriesProps) => {
   )
 }
 
+const assertNever = (entry: never): never => {
+    throw new Error('Unhandled entry')  
+}
+
 const PatientEntry = (props: PatientEntryProps) => {
-  return (
-    <div key={props.entry.id}>
-      <p>{props.entry.date} {props.entry.description}</p>
-      {props.entry.diagnosisCodes?.map(code => <PatientDiagnosis code={code} />)}
-    </div>
-  )
+  const boxStyle = {
+    border: '1px solid rgba(0, 0, 0, 1)', 
+  }
+
+  switch(props.entry.type) {
+    case "HealthCheck":
+      return (
+        <div key={props.entry.id} style={boxStyle}>
+          <p>{props.entry.date} {props.entry.description}</p>
+          <p>Health {props.entry.healthCheckRating} / 3 (0 Healthy - 3 Critical)</p>
+          {props.entry.diagnosisCodes?.map(code => <PatientDiagnosis code={code} />)}
+          <p>Diagnosed by {props.entry.specialist}</p>
+        </div>
+      )
+    case "Hospital":
+      return (
+        <div key={props.entry.id} style={boxStyle}>
+          <p>{props.entry.date} {props.entry.description}</p>
+          <p>{props.entry.discharge.criteria} {props.entry.discharge.date}</p>
+          {props.entry.diagnosisCodes?.map(code => <PatientDiagnosis code={code} />)}
+          <p>Diagnosed by {props.entry.specialist}</p>
+        </div>
+      )
+    case "OccupationalHealthcare":
+      return (
+        <div key={props.entry.id} style={boxStyle}>
+          <p>{props.entry.date} {props.entry.description} - Employer: {props.entry.employerName}</p>
+          {props.entry.sickLeave ? <p>Sickleave from {props.entry.sickLeave.startDate} until {props.entry.sickLeave.endDate}</p> : null}
+          {props.entry.diagnosisCodes?.map(code => <PatientDiagnosis code={code} />)}
+        </div>
+      )
+    default:
+      return assertNever(props.entry)
+  }
 }
 
 const PatientPage = () => {
