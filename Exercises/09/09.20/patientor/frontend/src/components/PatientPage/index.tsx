@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
+import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
 
 import { Patient, Entry, Diagnosis } from "../../types";
 
@@ -9,6 +10,9 @@ import patientService from "../../services/patients";
 import { apiBaseUrl } from "../../constants";
 
 import diagnosisService from "../../services/diagnoses";
+
+import AddEntryModal from "../AddEntryModal";
+import { EntryFormValues } from "../../types";
 
 type PatientEntryProps = {
   entry: Entry
@@ -98,6 +102,15 @@ const PatientPage = () => {
   const id = useParams().id
   const [patient, setPatient] = useState<Patient>();
 
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const openModal = (): void => setModalOpen(true);
+  const [error, setError] = useState<string>();
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
 
@@ -111,6 +124,30 @@ const PatientPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      if (!patient) {
+        return null
+      }
+      const updatedPatient = await patientService.createEntry(patient.id, values);
+      setPatient(updatedPatient);
+      setModalOpen(false);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  };
+
   if(!patient) {
     return null
   }
@@ -120,6 +157,15 @@ const PatientPage = () => {
       <h2>{patient.name} ({patient.gender})</h2>
       <p>{patient.ssn}</p>
       <p>{patient.occupation}</p>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button variant="contained" onClick={() => openModal()}>
+        Add New Entry
+      </Button>
       <PatientEntries entries={patient.entries} />
     </div>
   );
