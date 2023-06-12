@@ -1,0 +1,11 @@
+POST http://localhost:3001/api/patients/d2773822-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+    "description": "Test Entry",
+    "date": "01.01.2023",
+    "specialist": "Uuno Turhapuro",
+    "diagnosisCodes": ["420"],
+    "type": "HealthCheck",
+    "healthCheckRating": "Healthy"
+}

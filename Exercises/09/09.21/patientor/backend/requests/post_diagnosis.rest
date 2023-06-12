@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/diagnoses
+Content-Type: application/json
+
+{
+    "code": "abcd.1",
+    "name": "Test Code",
+    "latin": "Test Code in latin"
+}
